@@ -1,0 +1,31 @@
+pix_threshold_depth
+======================================
+
+pure data / Gem external to filter out certain parts in a defined x,y,z region of the depthmap provided by Kinect camera via pix_freenect or pix_openni.
+
+
+(C) 2012 by Matthias Kronlachner
+__________________________________________________________
+
+pix_openni and pix_freenect can (if set to raw mm mode) output the depth information in millimeter in the red and green color channel.
+
+this external allows you to filter out parts of the depthmap that lie within a certain x,y,z range.
+you can easily create masks for tracking or projection. (in combination with pix_multiblob...)
+
+all computation is done on cpu!
+consider using gpu shaders if you don't need the data on cpu side!
+
+_______________
+:::CHANGELOG:::
+
+
+ ________________
+:::KNOWN BUGS:::
+
+
+ ________________
+:::THINGS TO DO:::
+
+
+
+questions: m.kronlachner@gmail.com
