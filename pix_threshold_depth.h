@@ -68,6 +68,8 @@ class GEM_EXTERN pix_threshold_depth : public GemPixObj
 
     	void	    	floatWhiteningMess(float whitening);
 			void	    	floatTrimMess(float trim);
+			void	    	floatInvertMess(float arg);
+			
     	//////////
     	// The new color
     	//unsigned char  	m_thresh[4];
@@ -83,6 +85,9 @@ class GEM_EXTERN pix_threshold_depth : public GemPixObj
 			// if true trim x & y
 			bool m_trim;
 
+			// if true invert colors/alpha value
+			bool m_invert;
+			
 			// used for trimming picture
 			float m_x_min;
 			float m_x_max;			
@@ -103,6 +108,7 @@ class GEM_EXTERN pix_threshold_depth : public GemPixObj
 			
     	static void 	floatWhiteningMessCallback(void *data, t_floatarg whitening);
 			static void 	floatTrimMessCallback(void *data, t_floatarg trim);
+			static void 	floatInvertMessCallback(void *data, t_floatarg invert);
 };
 
 #endif	// for header file

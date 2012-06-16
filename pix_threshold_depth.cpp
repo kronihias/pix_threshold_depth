@@ -42,6 +42,7 @@ pix_threshold_depth :: pix_threshold_depth()
     m_lo_thresh = 10.1;
     m_whitening = false;
 		m_trim = false;
+		m_invert = false;
 		m_x_min = -2000.0;
 		m_x_max = 2000.0;			
 		m_y_min = -2000.0;
@@ -70,10 +71,18 @@ void pix_threshold_depth :: processRGBAImage(imageStruct &image)
 			value = ((int)base[chRed] << 8) + (int)base[chGreen];
 			if ((value < (int)m_lo_thresh) || (value > (int)m_hi_thresh))
 			{
-				base[chRed] = 0;
-				base[chGreen] = 0;
-				base[chBlue] = 0;
-				base[chAlpha] = 0;
+				if (!m_invert)
+				{
+					base[chRed] = 0;
+					base[chGreen] = 0;
+					base[chBlue] = 0;
+					base[chAlpha] = 0;
+				} else {
+					base[chRed] = 255;
+					base[chGreen] = 255;
+					base[chBlue] = 255;
+					base[chAlpha] = 255;
+				}
 			} else {
 				
 				if (m_trim)
@@ -95,10 +104,18 @@ void pix_threshold_depth :: processRGBAImage(imageStruct &image)
 					{
 						if (m_whitening)
 						{
-							base[chRed] = 255;
-							base[chGreen] = 255;
-							base[chBlue] = 255;
-							base[chAlpha] = 255;
+							if (!m_invert)
+							{
+								base[chRed] = 255;
+								base[chGreen] = 255;
+								base[chBlue] = 255;
+								base[chAlpha] = 255;
+							} else {
+								base[chRed] = 0;
+								base[chGreen] = 0;
+								base[chBlue] = 0;
+								base[chAlpha] = 0;
+							}
 						}
 						// just leave pixel data if pass w.o. whitening
 					} else {
@@ -110,10 +127,18 @@ void pix_threshold_depth :: processRGBAImage(imageStruct &image)
 				} else {
 					if (m_whitening)
 					{
-						base[chRed] = 255;
-						base[chGreen] = 255;
-						base[chBlue] = 255;
-						base[chAlpha] = 255;
+						if (!m_invert)
+						{
+							base[chRed] = 255;
+							base[chGreen] = 255;
+							base[chBlue] = 255;
+							base[chAlpha] = 255;
+						} else {
+							base[chRed] = 0;
+							base[chGreen] = 0;
+							base[chBlue] = 0;
+							base[chAlpha] = 0;
+						}
 					}
 				}
 			}
@@ -228,6 +253,16 @@ void pix_threshold_depth :: floatTrimMess(float trim)
 	}
 }
 
+void pix_threshold_depth :: floatInvertMess(float arg)
+{
+	if (arg < 0.5)
+	{
+		m_invert = false;
+	} else {
+		m_invert = true;
+	}
+}
+
 /////////////////////////////////////////////////////////
 // static member function
 //
@@ -250,6 +285,8 @@ void pix_threshold_depth :: obj_setupCallback(t_class *classPtr)
     	    gensym("whitening"), A_FLOAT, A_NULL);
 	 	class_addmethod(classPtr, reinterpret_cast<t_method>(&pix_threshold_depth::floatTrimMessCallback),
 		    	gensym("trim"), A_FLOAT, A_NULL);
+		class_addmethod(classPtr, reinterpret_cast<t_method>(&pix_threshold_depth::floatInvertMessCallback),
+		    	gensym("invert"), A_FLOAT, A_NULL);
 }
 void pix_threshold_depth :: floatLoThreshMessCallback(void *data, t_floatarg lo_thresh)
 {
@@ -283,4 +320,8 @@ void pix_threshold_depth :: floatWhiteningMessCallback(void *data, t_floatarg wh
 void pix_threshold_depth :: floatTrimMessCallback(void *data, t_floatarg trim)
 {
     GetMyClass(data)->floatTrimMess((float)trim);
+}
+void pix_threshold_depth :: floatInvertMessCallback(void *data, t_floatarg arg)
+{
+    GetMyClass(data)->floatInvertMess((float)arg);
 }
