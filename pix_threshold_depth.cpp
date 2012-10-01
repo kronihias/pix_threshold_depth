@@ -97,7 +97,7 @@ void pix_threshold_depth :: processRGBAImage(imageStruct &image)
 					// y component
 					//float FovV=0.78980943449644714;
 					//float YtoZ = tan(FovV / 2.0) * 2.0;
-					float pos_y = (-1) * (ceil((datasize / image.xsize)) - image.ysize);
+					float pos_y = (-1) * (ceil((float)((datasize / image.xsize)) - image.ysize));
 					float real_y = (0.5 - (pos_y / 480.0)) * value * YtoZ;
 					
 					if ((real_y < m_y_max) && (real_y > m_y_min) && (real_x < m_x_max) && (real_x > m_x_min))
@@ -177,7 +177,7 @@ void pix_threshold_depth :: processYUVImage(imageStruct &image)
 					// y component
 					//float FovV=0.78980943449644714;
 					//float YtoZ = tan(FovV / 2.0) * 2.0;
-					float pos_y = (-1) * (ceil((datasize / image.xsize)) - image.ysize);
+					float pos_y = (-1) * (ceil((float)((datasize / image.xsize)) - image.ysize));
 					float real_y = (0.5 - (pos_y / 480.0)) * value * YtoZ;
 					
 					if ((real_y < m_y_max) && (real_y > m_y_min) && (real_x < m_x_max) && (real_x > m_x_min))
