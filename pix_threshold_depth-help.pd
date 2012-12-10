@@ -1,4 +1,4 @@
-#N canvas 670 22 563 483 10;
+#N canvas 562 39 610 482 10;
 #X obj 83 196 pix_threshold_depth;
 #X text 10 38 for use with pix_freenect or pix_openni;
 #X obj 14 349 pix_texture;
@@ -159,6 +159,7 @@
 #X msg 251 66 depth_mode 4;
 #X text 335 66 aligned;
 #X text 342 44 raw color;
+#X msg 37 37;
 #X connect 0 0 6 0;
 #X connect 1 0 5 0;
 #X connect 1 1 4 0;
@@ -274,7 +275,7 @@
 #X obj 14 413 translateXYZ -5.3 0 0;
 #X obj 164 397 translateXYZ 5.3 0 0;
 #X msg 360 263 color 1 0 0;
-#X text 296 109 distance;
+#X text 296 110 distance;
 #X msg 381 289 dimen 1280 480 \, create \, 1;
 #N canvas 0 22 464 262 trim_x_y 0;
 #X obj 129 220 outlet;
@@ -320,43 +321,16 @@ world x and y coordinates;
 #X connect 13 0 0 0;
 #X connect 14 0 0 0;
 #X restore 102 127 pd trim_x_y;
-#N canvas 0 22 454 216 just-for-test 0;
-#X obj 60 32 inlet;
-#X obj 251 29 inlet;
-#X obj 60 117 pix_stitch;
-#N canvas 202 22 450 300 record 0;
-#X obj 91 50 inlet;
-#X obj 267 89 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X obj 168 27 loadbang;
-#X obj 91 171 outlet;
-#X obj 91 142 pix_record;
-#X msg 267 116 record \$1;
-#X obj 176 83 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X msg 176 110 auto \$1;
-#X msg 168 52 file /Users/matthias/mymovie.mov;
-#X connect 0 0 4 0;
-#X connect 1 0 5 0;
-#X connect 2 0 8 0;
-#X connect 4 0 3 0;
-#X connect 5 0 4 0;
-#X connect 6 0 7 0;
-#X connect 7 0 4 0;
-#X connect 8 0 4 0;
-#X restore 60 140 pd record;
-#X text 68 92 this is another experimental external to stitch two pixes
-;
-#X connect 0 0 2 0;
-#X connect 1 0 2 1;
-#X connect 2 0 3 0;
-#X restore 27 328 pd just-for-test;
 #X text 10 7 extract part of image in certain distance (distance coded
 into r and g color channel);
 #X msg 95 94 invert \$1;
 #X obj 95 74 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
 ;
 #X text 115 74 invert color/alpha channel;
+#X obj 288 57 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 288 77 usercoloring \$1;
+#X text 308 57 let users pass (with pix_openni blue channel);
 #X connect 0 0 17 0;
 #X connect 2 0 13 0;
 #X connect 4 0 10 0;
@@ -367,7 +341,6 @@ into r and g color channel);
 #X connect 8 0 0 2;
 #X connect 9 0 0 1;
 #X connect 10 0 2 0;
-#X connect 10 0 32 0;
 #X connect 11 0 15 0;
 #X connect 12 0 10 1;
 #X connect 12 1 11 0;
@@ -376,7 +349,6 @@ into r and g color channel);
 #X connect 15 0 27 0;
 #X connect 16 0 15 0;
 #X connect 17 0 12 0;
-#X connect 17 0 32 1;
 #X connect 18 0 3 0;
 #X connect 19 0 3 0;
 #X connect 20 0 23 1;
@@ -389,5 +361,7 @@ into r and g color channel);
 #X connect 28 0 3 0;
 #X connect 30 0 3 0;
 #X connect 31 0 0 0;
-#X connect 34 0 0 0;
-#X connect 35 0 34 0;
+#X connect 33 0 0 0;
+#X connect 34 0 33 0;
+#X connect 36 0 37 0;
+#X connect 37 0 0 0;

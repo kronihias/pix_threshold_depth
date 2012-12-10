@@ -41,12 +41,13 @@ pix_threshold_depth :: pix_threshold_depth()
     m_hi_thresh = 3000.0;
     m_lo_thresh = 10.1;
     m_whitening = false;
-		m_trim = false;
-		m_invert = false;
-		m_x_min = -2000.0;
-		m_x_max = 2000.0;			
-		m_y_min = -2000.0;
-		m_y_max = 2000.0;
+	m_trim = false;
+    m_invert = false;
+    m_usercoloring = false;
+	m_x_min = -2000.0;
+	m_x_max = 2000.0;
+	m_y_min = -2000.0;
+	m_y_max = 2000.0;
 }
 
 /////////////////////////////////////////////////////////
@@ -65,11 +66,17 @@ void pix_threshold_depth :: processRGBAImage(imageStruct &image)
     int datasize = image.xsize * image.ysize;
 
     unsigned char *base = image.data;
-		int value = 0;
+    
+    int value = 0;
+    int userid = 0;
     while(datasize--)
     {
 			value = ((int)base[chRed] << 8) + (int)base[chGreen];
-			if ((value < (int)m_lo_thresh) || (value > (int)m_hi_thresh))
+        
+            if (m_usercoloring)
+                userid = base[chBlue];
+        
+            if (((value < (int)m_lo_thresh) || (value > (int)m_hi_thresh) && userid == 0))
 			{
 				if (!m_invert)
 				{
@@ -263,6 +270,16 @@ void pix_threshold_depth :: floatInvertMess(float arg)
 	}
 }
 
+void pix_threshold_depth :: floatUsercoloringMess(float arg)
+{
+	if (arg < 0.5)
+	{
+		m_usercoloring = false;
+	} else {
+		m_usercoloring = true;
+	}
+}
+
 /////////////////////////////////////////////////////////
 // static member function
 //
@@ -283,10 +300,12 @@ void pix_threshold_depth :: obj_setupCallback(t_class *classPtr)
     	    gensym("x_max"), A_FLOAT, A_NULL);
     class_addmethod(classPtr, reinterpret_cast<t_method>(&pix_threshold_depth::floatWhiteningMessCallback),
     	    gensym("whitening"), A_FLOAT, A_NULL);
-	 	class_addmethod(classPtr, reinterpret_cast<t_method>(&pix_threshold_depth::floatTrimMessCallback),
+	class_addmethod(classPtr, reinterpret_cast<t_method>(&pix_threshold_depth::floatTrimMessCallback),
 		    	gensym("trim"), A_FLOAT, A_NULL);
-		class_addmethod(classPtr, reinterpret_cast<t_method>(&pix_threshold_depth::floatInvertMessCallback),
+    class_addmethod(classPtr, reinterpret_cast<t_method>(&pix_threshold_depth::floatInvertMessCallback),
 		    	gensym("invert"), A_FLOAT, A_NULL);
+    class_addmethod(classPtr, reinterpret_cast<t_method>(&pix_threshold_depth::floatUsercoloringMessCallback),
+                    gensym("usercoloring"), A_FLOAT, A_NULL);
 }
 void pix_threshold_depth :: floatLoThreshMessCallback(void *data, t_floatarg lo_thresh)
 {
@@ -313,15 +332,19 @@ void pix_threshold_depth :: floatXMaxMessCallback(void *data, t_floatarg x_max)
 {
     GetMyClass(data)->m_x_max=((float)x_max);
 }
-void pix_threshold_depth :: floatWhiteningMessCallback(void *data, t_floatarg whitening)
+void pix_threshold_depth :: floatWhiteningMessCallback(void *data, t_floatarg arg)
 {
-    GetMyClass(data)->floatWhiteningMess((float)whitening);
+    GetMyClass(data)->floatWhiteningMess((float)arg);
 }
-void pix_threshold_depth :: floatTrimMessCallback(void *data, t_floatarg trim)
+void pix_threshold_depth :: floatTrimMessCallback(void *data, t_floatarg arg)
 {
-    GetMyClass(data)->floatTrimMess((float)trim);
+    GetMyClass(data)->floatTrimMess((float)arg);
 }
 void pix_threshold_depth :: floatInvertMessCallback(void *data, t_floatarg arg)
 {
     GetMyClass(data)->floatInvertMess((float)arg);
+}
+void pix_threshold_depth :: floatUsercoloringMessCallback(void *data, t_floatarg arg)
+{
+    GetMyClass(data)->floatUsercoloringMess((float)arg);
 }
