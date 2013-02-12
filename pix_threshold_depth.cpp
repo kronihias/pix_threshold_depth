@@ -20,7 +20,7 @@
 #include "pix_threshold_depth.h"
 
 
-CPPEXTERN_NEW(pix_threshold_depth);
+CPPEXTERN_NEW_WITH_TWO_ARGS(pix_threshold_depth, t_floatarg, A_DEFFLOAT, t_floatarg, A_DEFFLOAT);
 
 #define XtoZ 1.111466646194458
 #define YtoZ 0.833599984645844
@@ -33,21 +33,29 @@ CPPEXTERN_NEW(pix_threshold_depth);
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_threshold_depth :: pix_threshold_depth()
+pix_threshold_depth :: pix_threshold_depth(t_floatarg min_z, t_floatarg max_z) : m_active(true)
 {
     inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("whitening"));
     inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("lo_thresh"));
     inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("hi_thresh"));
+  
     m_hi_thresh = 3000.0;
     m_lo_thresh = 10.1;
+  
+    if (max_z)
+      m_hi_thresh = max_z;
+  
+    if (min_z)
+      m_lo_thresh = min_z;
+    
     m_whitening = false;
-	m_trim = false;
+    m_trim = false;
     m_invert = false;
     m_usercoloring = false;
-	m_x_min = -2000.0;
-	m_x_max = 2000.0;
-	m_y_min = -2000.0;
-	m_y_max = 2000.0;
+    m_x_min = -2000.0;
+    m_x_max = 2000.0;
+    m_y_min = -2000.0;
+    m_y_max = 2000.0;
 }
 
 /////////////////////////////////////////////////////////
@@ -63,8 +71,9 @@ pix_threshold_depth :: ~pix_threshold_depth()
 /////////////////////////////////////////////////////////
 void pix_threshold_depth :: processRGBAImage(imageStruct &image)
 {
+  if (m_active) {
     int datasize = image.xsize * image.ysize;
-
+    
     unsigned char *base = image.data;
     
     int value = 0;
@@ -72,11 +81,11 @@ void pix_threshold_depth :: processRGBAImage(imageStruct &image)
     while(datasize--)
     {
 			value = ((int)base[chRed] << 8) + (int)base[chGreen];
-        
-            if (m_usercoloring)
-                userid = base[chBlue];
-        
-            if (((value < (int)m_lo_thresh) || (value > (int)m_hi_thresh) && userid == 0))
+      
+      if (m_usercoloring)
+        userid = base[chBlue];
+      
+      if (((value < (int)m_lo_thresh) || (value > (int)m_hi_thresh) && userid == 0))
 			{
 				if (!m_invert)
 				{
@@ -100,7 +109,7 @@ void pix_threshold_depth :: processRGBAImage(imageStruct &image)
 					//float XtoZ = tan(FovH / 2.0) * 2.0;
 					float pos_x = (-1) * ((datasize % image.xsize) - image.xsize);
 					float real_x = ((pos_x / 640.0) - 0.5) * value * XtoZ;
-				
+          
 					// y component
 					//float FovV=0.78980943449644714;
 					//float YtoZ = tan(FovV / 2.0) * 2.0;
@@ -149,8 +158,9 @@ void pix_threshold_depth :: processRGBAImage(imageStruct &image)
 					}
 				}
 			}
-		base += 4;
-    }    
+      base += 4;
+    }
+  }
 }
 
 /////////////////////////////////////////////////////////
@@ -278,6 +288,16 @@ void pix_threshold_depth :: floatUsercoloringMess(float arg)
 	} else {
 		m_usercoloring = true;
 	}
+}
+
+void pix_threshold_depth :: activeMessCallback(void *data, t_floatarg value)
+{
+  if (value < 0.5) {
+    GetMyClass(data)->m_active = false;
+  } else {
+    GetMyClass(data)->m_active = true;
+  }
+  
 }
 
 /////////////////////////////////////////////////////////

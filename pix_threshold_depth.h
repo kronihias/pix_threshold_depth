@@ -49,7 +49,7 @@ class GEM_EXTERN pix_threshold_depth : public GemPixObj
 
         //////////
         // Constructor
-    	pix_threshold_depth();
+    	pix_threshold_depth(t_floatarg min_z, t_floatarg max_z);
     	
     protected:
     	
@@ -101,7 +101,9 @@ class GEM_EXTERN pix_threshold_depth : public GemPixObj
 			float m_x_max;			
 			float m_y_min;
 			float m_y_max;
-			
+		
+      bool m_active;
+  
     private:
     
     	//////////
@@ -114,10 +116,12 @@ class GEM_EXTERN pix_threshold_depth : public GemPixObj
 			static void 	floatYMinMessCallback(void *data, t_floatarg y_min);
 			static void 	floatYMaxMessCallback(void *data, t_floatarg y_max);
 			
-            static void 	floatWhiteningMessCallback(void *data, t_floatarg arg);
+      static void 	floatWhiteningMessCallback(void *data, t_floatarg arg);
 			static void 	floatTrimMessCallback(void *data, t_floatarg arg);
 			static void 	floatInvertMessCallback(void *data, t_floatarg arg);
-            static void 	floatUsercoloringMessCallback(void *data, t_floatarg arg);
+      static void 	floatUsercoloringMessCallback(void *data, t_floatarg arg);
+  
+      static void 	activeMessCallback(void *data, t_floatarg value);
 };
 
 #endif	// for header file
